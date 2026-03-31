@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
 
+	@Environment(HomeViewModel.self) var viewModel: HomeViewModel
 	@State private var showPortfolio: Bool = false
 
     var body: some View {
@@ -18,6 +19,23 @@ struct HomeView: View {
 
 			VStack {
 				headerView
+
+				columnTitles
+
+				if !showPortfolio {
+					coinsList(
+						viewModel.allCoins,
+						showHoldings: false
+					)
+					.transition(.move(edge: .leading))
+				} else {
+					coinsList(
+						viewModel.portfolioCoins,
+						showHoldings: true
+					)
+					.transition(.move(edge: .trailing))
+				}
+
 				Spacer(minLength: 0)
 			}
 		}
@@ -53,11 +71,48 @@ private extension HomeView {
 		}
 		.padding(.horizontal)
 	}
+
+	var columnTitles: some View {
+		HStack {
+			Text("Coin")
+			Spacer()
+
+			if showPortfolio {
+				Text("Holdings")
+			}
+			Text("Price")
+				.containerRelativeFrame(
+					[.horizontal], alignment: .trailing
+				) { length, axis in
+					axis == .horizontal ? length / 3.5 : length
+				}
+		}
+		.font(.caption)
+		.foregroundStyle(Color.theme.secondaryText)
+		.padding(.horizontal)
+		.padding(.top, 10)
+	}
+
+	func coinsList(_ coins: [CoinModel], showHoldings: Bool) -> some View {
+		List(coins) { coin in
+			CoinRowView(coin: coin, showHoldingsColumn: showHoldings)
+				.listRowInsets(
+					EdgeInsets(
+						top: 10,
+						leading: 0,
+						bottom: 10,
+						trailing: 10
+					)
+				)
+		}
+		.listStyle(.plain)
+	}
 }
 
 #Preview {
 	NavigationStack {
 		HomeView()
+			.toolbarVisibility(.hidden)
 	}
-	.toolbarVisibility(.hidden)
+	.environment(MockData.instance.homeVM)
 }

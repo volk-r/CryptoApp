@@ -18,7 +18,6 @@ struct CoinRowView: View {
 			Spacer()
 			if showHoldingsColumn {
 				centerColumn
-				Spacer()
 			}
 			rightColumn
 		}
@@ -37,7 +36,7 @@ private extension CoinRowView {
 				.frame(width: 30, height: 30)
 			Text(coin.symbol.uppercased())
 				.font(.headline)
-				.padding(.leading, 10)
+				.padding(.leading, 6)
 				.foregroundStyle(Color.theme.accent)
 		}
 	}
@@ -45,10 +44,8 @@ private extension CoinRowView {
 	var centerColumn: some View {
 		VStack(alignment: .trailing) {
 			Text(coin.currentHoldingsValue.asCurrencyWith2Decimals())
-				.font(.subheadline)
-				.fontWeight(.bold)
+				.bold()
 			Text((coin.currentHoldings ?? 0).asNumberString())
-				.font(.subheadline)
 		}
 		.foregroundStyle(Color.theme.accent)
 	}
