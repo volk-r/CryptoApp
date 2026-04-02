@@ -15,21 +15,38 @@ final class CoinImageService: ObservableObject {
 	private var imageSubscription: AnyCancellable?
 	private let coin: CoinModel
 
-	init(coin: CoinModel) {
+	private let fileManager = LocalFileManager.instance
+	private let folderName: String
+	private let imageName: String
+
+	init(coin: CoinModel, folderName: String = "coin_images") {
 		self.coin = coin
+		self.folderName = folderName
+		self.imageName = coin.id
+
 		getCoinImage()
 	}
 
 	private func getCoinImage() {
+		if let savedImage = fileManager.getImage(imageName: imageName, folderName: folderName) {
+			image = savedImage
+		} else {
+			downloadCoinImage()
+		}
+	}
+
+	private func downloadCoinImage() {
 		guard let url = URL(string: coin.image) else { return }
 
 		imageSubscription = NetworkManager.download(url: url)
 			.tryMap { (data) -> UIImage? in UIImage(data: data) }
 			.sink { completion in
 				NetworkManager.handleCompletion(completion: completion)
-			} receiveValue: { [weak self] returnedCoins in
-				self?.image = returnedCoins
-				self?.imageSubscription?.cancel()
+			} receiveValue: { [weak self] returnedImage in
+				guard let self, let returnedImage else { return }
+				self.image = returnedImage
+				self.imageSubscription?.cancel()
+				self.fileManager.saveImage(image: returnedImage, imageName: imageName, folderName: folderName)
 			}
 	}
 }
