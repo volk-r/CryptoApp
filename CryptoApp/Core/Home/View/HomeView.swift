@@ -19,7 +19,7 @@ struct HomeView: View {
 
 			VStack {
 				headerView
-
+				HomeStatsView(showPortfolio: $showPortfolio)
 				SearchBarView(searchText: $viewModel.searchText)
 
 				columnTitles
@@ -72,6 +72,7 @@ private extension HomeView {
 				}
 		}
 		.padding(.horizontal)
+		.padding(.bottom, 10)
 	}
 
 	var columnTitles: some View {
@@ -92,7 +93,6 @@ private extension HomeView {
 		.font(.caption)
 		.foregroundStyle(Color.theme.secondaryText)
 		.padding(.horizontal)
-		.padding(.top, 10)
 	}
 
 	func coinsList(_ coins: [CoinModel], showHoldings: Bool) -> some View {
