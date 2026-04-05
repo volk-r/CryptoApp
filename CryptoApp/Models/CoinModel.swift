@@ -49,7 +49,7 @@ import Foundation
    }
  */
 
-struct CoinModel: Identifiable, Codable {
+struct CoinModel: Identifiable, Codable, Hashable {
 	let id, symbol, name: String
 	let image: String
 	let currentPrice: Double
@@ -137,8 +137,12 @@ struct CoinModel: Identifiable, Codable {
 	var rank: Int {
 		Int(marketCapRank ?? 0)
 	}
+
+	static func == (lhs: CoinModel, rhs: CoinModel) -> Bool {
+		lhs.id == rhs.id
+	}
 }
 
-struct SparklineIn7D: Codable {
+struct SparklineIn7D: Codable, Hashable {
 	let price: [Double]?
 }

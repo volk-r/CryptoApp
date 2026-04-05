@@ -167,18 +167,17 @@ private extension HomeView {
 
 	func coinsList(_ coins: [CoinModel], showHoldings: Bool) -> some View {
 		List(coins) { coin in
-			CoinRowView(coin: coin, showHoldingsColumn: showHoldings)
-				.listRowInsets(
-					EdgeInsets(
-						top: 10,
-						leading: 0,
-						bottom: 10,
-						trailing: 10
-					)
-				)
+			NavigationLink(value: coin) {
+				CoinRowView(coin: coin, showHoldingsColumn: showHoldings)
+			}
+			.listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 10))
+			.navigationLinkIndicatorVisibility(.hidden)
 		}
 		.listStyle(.plain)
 		.refreshable { viewModel.reloadData() }
+		.navigationDestination(for: CoinModel.self) { coin in
+			DetailView(coin: coin)
+		}
 	}
 }
 
